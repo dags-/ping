@@ -16,6 +16,7 @@ var (
 	emptyModList = make([]Mod, 0)
 )
 
+// get the status of the given server:port
 func GetStatus(server string, port int) Status {
 	var status Status
 
@@ -31,6 +32,7 @@ func GetStatus(server string, port int) Status {
 	return status
 }
 
+// ping the server:port for data/error
 func getServerData(server string, port int) (*Data, error) {
 	con, err := net.Dial("tcp", fmt.Sprintf("%s:%v", server, port))
 	if err != nil {
@@ -76,6 +78,7 @@ func getServerData(server string, port int) (*Data, error) {
 	return parseData(data[i0+i1:])
 }
 
+// unmarshal bytes to Data struct
 func parseData(b []byte) (*Data, error) {
 	var s Data
 	err := json.Unmarshal(b, &s)
@@ -117,6 +120,7 @@ func varInt(i int) []byte {
 	return buf[:l]
 }
 
+// set empty arrays instead of nulls
 func tidyData(s Data) {
 	if s.Players.Sample == nil {
 		s.Players.Sample = emptySample
