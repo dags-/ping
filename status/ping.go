@@ -82,7 +82,7 @@ func getServerData(server string, port int) (*Data, error) {
 func parseData(b []byte) (*Data, error) {
 	var s Data
 	err := json.Unmarshal(b, &s)
-	tidyData(s)
+	tidyData(&s)
 	return &s, err
 }
 
@@ -121,11 +121,11 @@ func varInt(i int) []byte {
 }
 
 // set empty arrays instead of nulls
-func tidyData(s Data) {
-	if s.Players.Sample == nil {
-		s.Players.Sample = emptySample
+func tidyData(d *Data) {
+	if d.Players.Sample == nil {
+		d.Players.Sample = emptySample
 	}
-	if s.ModInfo != nil && s.ModInfo.ModList == nil {
-		s.ModInfo.ModList = emptyModList
+	if d.ModInfo != nil && d.ModInfo.ModList == nil {
+		d.ModInfo.ModList = emptyModList
 	}
 }
