@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -15,7 +16,12 @@ import (
 
 func main() {
 	port := flag.Int("port", 8085, "The http server port")
+	dial := flag.Int("dial", 250, "Dial timeout")
+	con := flag.Int("con", 250, "Connection timeout")
 	flag.Parse()
+
+	status.DialTimeout = time.Duration(*dial) * time.Millisecond
+	status.ConTimeout = time.Duration(*con) * time.Millisecond
 
 	router := routing.New()
 	router.Get("/<server>", handler)
@@ -31,6 +37,7 @@ func main() {
 		MaxRequestBodySize: 0,
 	}
 
+	log.Printf("running on: http://127.0.0.1:%v\n", *port)
 	panic(server.ListenAndServe(fmt.Sprintf(":%v", *port)))
 }
 

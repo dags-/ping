@@ -14,6 +14,8 @@ import (
 var (
 	emptySample  = make([]Player, 0)
 	emptyModList = make([]Mod, 0)
+	DialTimeout  = time.Millisecond * 250
+	ConTimeout   = time.Millisecond * 250
 )
 
 // get the status of the given server:port
@@ -34,16 +36,13 @@ func GetStatus(server string, port int) Status {
 
 // ping the server:port for data/error
 func getServerData(server string, port int) (*Data, error) {
-	con, err := net.Dial("tcp", fmt.Sprintf("%s:%v", server, port))
+	con, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%v", server, port), DialTimeout)
 	if err != nil {
 		return nil, err
 	}
 
 	defer con.Close()
-	deadline := time.Now().Add(5 * time.Second)
-	con.SetDeadline(deadline)
-	con.SetReadDeadline(deadline)
-	con.SetWriteDeadline(deadline)
+	con.SetDeadline(time.Now().Add(ConTimeout))
 
 	// handshake
 	_, err = con.Write(handshake(server, port).Bytes())
