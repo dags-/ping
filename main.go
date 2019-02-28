@@ -1,18 +1,16 @@
 package main
 
 import (
-	"bufio"
+	"encoding/json"
 	"flag"
 	"fmt"
-	"os"
 	"strconv"
 	"time"
 
-	"encoding/json"
-
-	"github.com/dags-/ping/status"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
+
+	"github.com/dags-/ping/status"
 )
 
 func main() {
@@ -30,12 +28,8 @@ func main() {
 		WriteBufferSize:    0,
 		ReadTimeout:        time.Duration(time.Second * 2),
 		WriteTimeout:       time.Duration(time.Second * 2),
-		MaxConnsPerIP:      3,
-		MaxRequestsPerConn: 2,
 		MaxRequestBodySize: 0,
 	}
-
-	go handleStop()
 
 	panic(server.ListenAndServe(fmt.Sprintf(":%v", *port)))
 }
@@ -49,17 +43,6 @@ func handler(c *routing.Context) error {
 	enc := json.NewEncoder(c)
 	enc.SetIndent("", "  ")
 	return enc.Encode(stats)
-}
-
-func handleStop() {
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		if scanner.Text() == "stop" {
-			fmt.Println("Stopping...")
-			os.Exit(0)
-			break
-		}
-	}
 }
 
 func parsePort(port string) int {
